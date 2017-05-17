@@ -93,10 +93,10 @@ class SpheroNode(object):
         self.power_state = 0
 
     def _init_pubsub(self):
-        self.odom_pub = rospy.Publisher('odom', Odometry)
-        self.imu_pub = rospy.Publisher('imu', Imu)
-        self.collision_pub = rospy.Publisher('collision', SpheroCollision)
-        self.diag_pub = rospy.Publisher('/diagnostics', DiagnosticArray)
+        self.odom_pub = rospy.Publisher('odom', Odometry, queue_size=1)
+        self.imu_pub = rospy.Publisher('imu', Imu, queue_size=1)
+        self.collision_pub = rospy.Publisher('collision', SpheroCollision, queue_size=1)
+        self.diag_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=1)
         self.cmd_vel_sub = rospy.Subscriber('cmd_vel', Twist, self.cmd_vel, queue_size = 1)
         self.color_sub = rospy.Subscriber('set_color', ColorRGBA, self.set_color, queue_size = 1)
         self.back_led_sub = rospy.Subscriber('set_back_led', Float32, self.set_back_led, queue_size = 1)
@@ -201,10 +201,11 @@ class SpheroNode(object):
             now = rospy.Time.now()
             imu = Imu(header=rospy.Header(frame_id="imu_link"))
             imu.header.stamp = now
-            imu.orientation.x = data["QUATERNION_Q0"]
-            imu.orientation.y = data["QUATERNION_Q1"]
-            imu.orientation.z = data["QUATERNION_Q2"]
-            imu.orientation.w = data["QUATERNION_Q3"]
+            Qfactor = 1/(math.sqrt( float(data["QUATERNION_Q0"]**2) + float(data["QUATERNION_Q1"]**2) + float(data["QUATERNION_Q2"]**2) + float(data["QUATERNION_Q3"]**2) ) )
+            imu.orientation.x = float(data["QUATERNION_Q0"]*Qfactor)
+            imu.orientation.y = float(data["QUATERNION_Q1"]*Qfactor)
+            imu.orientation.z = float(data["QUATERNION_Q2"]*Qfactor)
+            imu.orientation.w = float(data["QUATERNION_Q3"]*Qfactor)
             imu.linear_acceleration.x = data["ACCEL_X_FILTERED"]/4096.0*9.8
             imu.linear_acceleration.y = data["ACCEL_Y_FILTERED"]/4096.0*9.8
             imu.linear_acceleration.z = data["ACCEL_Z_FILTERED"]/4096.0*9.8
@@ -225,7 +226,7 @@ class SpheroNode(object):
 
             #need to publish this trasform to show the roll, pitch, and yaw properly
             self.transform_broadcaster.sendTransform((0.0, 0.0, 0.038 ),
-                (data["QUATERNION_Q0"], data["QUATERNION_Q1"], data["QUATERNION_Q2"], data["QUATERNION_Q3"]),
+                (data["QUATERNION_Q0"]*Qfactor, data["QUATERNION_Q1"]*Qfactor, data["QUATERNION_Q2"]*Qfactor, data["QUATERNION_Q3"]*Qfactor ),
                 odom.header.stamp, "base_link", "base_footprint")
 
     def cmd_vel(self, msg):

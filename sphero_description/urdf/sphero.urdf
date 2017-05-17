@@ -9,10 +9,15 @@
   <property name="M_PI" value="3.14159"/>
   <property name="SCALE" value="0.0254"/>
 
+  <link name="base_footprint">
+  </link> 
+  <joint name="base_footprint_joint" type="fixed">
+    <origin xyz="0 0 0.0381" rpy="0 0 0" />
+    <parent link="base_footprint"/>
+    <child link="base_link" />
+  </joint>
 
-
-
-<link name="base_link">
+  <link name="base_link"> <!--   commented to try and fix state publisher-->
     <inertial>
       <mass value="0.5" />
       <origin xyz="0 0 0.0" />
@@ -35,20 +40,21 @@
     </collision>
   </link>
 
-
- 
-
   <!--joint name="base_footprint_joint" type="fixed">
     <origin xyz="0 0 0.0381" rpy="0 0 0" />
-    <parent link="base_footprint"/>
-    <child link="base_link" />
-  </joint>
+    <parent link="base_link"/>
+    <child link="base_footprint" />
+  </joint-->
+ 
+
 
   <joint name="imu_joint" type="fixed">
-    <origin xyz="0 0 0.0" rpy="0 0 0" />
-    <parent link="base_link"/>
+    <origin xyz="0 0 0.0381" rpy="0 0 0" />
+    <parent link="base_footprint"/>
     <child link="imu_link" />
-  </joint-->
+  </joint>
 
+  <link name="imu_link">
+  </link>
 
 </robot>

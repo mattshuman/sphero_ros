@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package>
+  <name>sphero_gui</name>
+  <version>0.0.1</version>
+  <description>The sphero_gui package</description>
+
+  <maintainer email="shumanm@oregonstate.edu">Matthew Shuman</maintainer>
+  <license>BSD</license>
+  
+  <!-- <url type="website">http://wiki.ros.org/sphero_gui</url> -->
+
+  <!-- The *_depend tags are used to specify dependencies -->
+  <!-- Dependencies can be catkin packages or system dependencies -->
+  <build_depend>rospy</build_depend>
+  <run_depend>rospy</run_depend>
+  
+  <build_depend>std_msgs</build_depend>
+  <run_depend>std_msgs</run_depend>
+  
+  <!-- Use test_depend for packages you need only for testing: -->
+  <!--   <test_depend>gtest</test_depend> -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

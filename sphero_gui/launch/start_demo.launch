@@ -1,0 +1,21 @@
+<launch>
+  <!-- Connect to the Sphero-->
+  <!--node pkg="sphero_node" type="sphero.py" name="SpheroNode" output ="screen">
+  </node-->
+
+  <!--node pkg="sphero_gui" type="sphero_gui.py" name="SpheroGUI" output ="screen">
+
+  </node-->
+
+  <node pkg="hokuyo_node" type="hokuyo_node" name="HokuyoLidar">
+    <param name="calibrate_time" value="false" />
+    <param name="port" value="/dev/ttyACM0" />
+  </node>
+  
+  <node pkg="rviz" type="rviz" name="SpheroSimulation" output ="screen"
+args="-f laser"/>
+  
+  <node pkg="sphero_gui" type="marker.py" name="LidarMarker" output ="screen">
+  </node>
+
+</launch>

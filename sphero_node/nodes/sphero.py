@@ -201,6 +201,8 @@ class SpheroNode(object):
             now = rospy.Time.now()
             imu = Imu(header=rospy.Header(frame_id="imu_link"))
             imu.header.stamp = now
+            
+            #The Qfactor normalizes the 4 quaternions, so the sum of the squares is 1.
             Qfactor = 1/(math.sqrt( float(data["QUATERNION_Q0"]**2) + float(data["QUATERNION_Q1"]**2) + float(data["QUATERNION_Q2"]**2) + float(data["QUATERNION_Q3"]**2) ) )
             imu.orientation.x = float(data["QUATERNION_Q0"]*Qfactor)
             imu.orientation.y = float(data["QUATERNION_Q1"]*Qfactor)

@@ -7,7 +7,7 @@ import rospkg
 rospack = rospkg.RosPack()
 
 topic = 'visualization_marker'
-pub = rospy.Publisher(topic, Marker)
+pub = rospy.Publisher(topic, Marker, queue_size=1)
 
 rospy.init_node('LidarMarker')
 

@@ -10,6 +10,7 @@
   <node pkg="hokuyo_node" type="hokuyo_node" name="HokuyoLidar">
     <param name="calibrate_time" value="false" />
     <param name="port" value="/dev/ttyACM0" />
+    <remap from="/scan" to="/laser"/>
   </node>
   
   <node pkg="rviz" type="rviz" name="SpheroSimulation" output ="screen"

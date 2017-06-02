@@ -234,8 +234,30 @@ class SpheroNode(object):
     def cmd_vel(self, msg):
         if self.is_connected:
             self.last_cmd_vel_time = rospy.Time.now()
-            self.cmd_heading = self.normalize_angle_positive(math.atan2(msg.linear.x,msg.linear.y))*180/math.pi
-            self.cmd_speed = math.sqrt(math.pow(msg.linear.x,2)+math.pow(msg.linear.y,2))
+            self.cmd_heading = self.normalize_angle_positive(math.atan2(-msg.linear.y,msg.linear.x))*180/math.pi
+            #The factor of 1975 bridges the difference between the driver and ROS interfaces.
+            #
+            #Sphero diameter = .074 meters
+            #Sphero circumference = .074 * pi = .2325 meters
+            #Movement / degree rotation = (.2325 / 360) = .6458 mm 
+            #
+            #Driver units = .784 degrees/second
+            #Driver units = .5063 mm/seconds
+            ###  MAX driver speed = 255 * .5063 mm = .129 meters/second
+            #
+            #ROS meters/sec to Sphero .5063 mm/second conversion:  
+            #1/.0005063 = 1*1975
+            #
+            #The calculated factor of 1975 makes the sphero move far too quickly.  This 
+            #factor is adjusted to 100, based on observations, giving a top speed of
+            #2.5 meters/second
+
+            requestedSpeed = math.sqrt(math.pow(msg.linear.x,2)+math.pow(msg.linear.y,2))
+            self.cmd_speed = int(100*requestedSpeed)
+            print "----------------"
+            print "requested speed: " + str(requestedSpeed)
+            print "speed: " + str(self.cmd_speed)
+            print "heading: " + str(self.cmd_heading)
             self.robot.roll(int(self.cmd_speed), int(self.cmd_heading), 1, False)
     
     def set_color(self, msg):
@@ -260,7 +282,7 @@ class SpheroNode(object):
 
     def set_angular_velocity(self, msg):
         if self.is_connected:
-            rate = int((msg.data*180/math.pi)/0.784)
+            rate = int(msg.data*180/math.pi*.784)
             self.robot.set_rotation_rate(rate, False)
 
     def configure_collision_detect(self, msg):
